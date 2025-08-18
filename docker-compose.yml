@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+    postgres:
+        image: postgres:15-alpine
+        container_name: my-postgres
+        restart: unless-stopped
+        ports:
+            - "5433:5432"
+        environment:
+            POSTGRES_DB: postgres
+            POSTGRES_USER: postgres
+            POSTGRES_PASSWORD: pass
+            POSTGRES_INITDB_ARGS: "--encoding=UTF-8"
+        volumes:
+            - postgres_data:/var/lib/postgresql/data
+        networks:
+            - nest-network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+
+volumes:
+    postgres_data:
+        driver: local
+
+networks:
+    nest-network:
+        driver: bridge
