@@ -1,6 +1,7 @@
 import { Inject, Injectable } from "@nestjs/common";
-import { NotFoundedException } from "../presentation/common";
+import UserResponseDto from "../dto/response/UserResponseDto";
 import { UserRepository } from "../repositories/UserRepository";
+import { NotFoundedException } from "../shared/exception/custom-exceptions";
 
 @Injectable()
 export default class UserService {
@@ -14,12 +15,6 @@ export default class UserService {
         if (!user) {
             throw new NotFoundedException("User not found");
         }
-        return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            createdAt: user.createdAt,
-            updatedAt: user.updatedAt,
-        };
+        return UserResponseDto.toDto(user);
     }
 }

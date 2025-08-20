@@ -3,12 +3,12 @@ import {
     Injectable,
     InternalServerErrorException,
 } from "@nestjs/common";
+import { LoginUserDto } from "../dto/request/auth/LoginUserDto";
+import { RegisterUserDto } from "../dto/request/auth/RegisterUserDto";
 import { User } from "../entities/user.entity";
-import { ConflictException } from "../presentation/common";
-import { LoginUserInputs } from "../presentation/validator/auth/loginUserSchema";
-import { RegisterUserInputs } from "../presentation/validator/auth/registerUserSchema";
 import { UserRepository } from "../repositories/UserRepository";
 import { API_MESSAGES, REPOSITORY_TOKENS } from "../shared/constants";
+import { ConflictException } from "../shared/exception/custom-exceptions";
 import { compare, hash } from "../shared/helper/auth.helper";
 import JwtHelper from "../shared/helper/jwt.helper";
 import { TransactionService } from "./TransactionService";
@@ -31,7 +31,7 @@ export default class AuthService {
     }
 
     async register(
-        request: RegisterUserInputs,
+        request: RegisterUserDto,
     ): Promise<{ message: string; userId: string }> {
         const { name, email, password } = request;
 
@@ -63,7 +63,7 @@ export default class AuthService {
         }
     }
 
-    async login(request: LoginUserInputs) {
+    async login(request: LoginUserDto) {
         const { email, password } = request;
 
         const user = await this.userRepository.findByEmail(email);

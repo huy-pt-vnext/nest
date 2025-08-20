@@ -7,17 +7,11 @@ import {
     Res,
 } from "@nestjs/common";
 import { Response } from "express";
-import { ApiResponse } from "../presentation/common";
-import AuthResponseDto from "../presentation/dto/AuthResponseDto";
-import {
-    LoginUserInputs,
-    loginUserValidationPipe,
-} from "../presentation/validator/auth/loginUserSchema";
-import {
-    RegisterUserInputs,
-    registerUserValidationPipe,
-} from "../presentation/validator/auth/registerUserSchema";
+import { LoginUserDto } from "../dto/request/auth/LoginUserDto";
+import { RegisterUserDto } from "../dto/request/auth/RegisterUserDto";
+import UserResponseDto from "../dto/response/UserResponseDto";
 import AuthService from "../services/AuthService";
+import { ApiResponse } from "../shared/common/api-response";
 import { Public } from "../shared/decorators/public.decorator";
 import { SkipPermission } from "../shared/decorators/skip-permission.decorator";
 import {
@@ -35,10 +29,8 @@ export default class AuthController {
     @Public()
     @Post("register")
     @HttpCode(HttpStatus.OK)
-    async createUser(
-        @Body(registerUserValidationPipe) request: RegisterUserInputs,
-    ) {
-        const result = await this.authService.register(request);
+    async createUser(@Body() body: RegisterUserDto) {
+        const result = await this.authService.register(body);
         return ApiResponse.ok(result, "Registered successfully");
     }
 
@@ -47,17 +39,17 @@ export default class AuthController {
     @Post("login")
     @HttpCode(HttpStatus.OK)
     async loginUser(
-        @Body(loginUserValidationPipe) request: LoginUserInputs,
+        @Body() body: LoginUserDto,
         @Res({ passthrough: true }) response: Response,
     ) {
         const { accessToken, refreshToken, user } =
-            await this.authService.login(request);
+            await this.authService.login(body);
 
         setAccessTokenToHeader(response, accessToken);
 
         setRefreshTokenToCookie(response, refreshToken);
 
-        const userResponse = AuthResponseDto.login(user);
+        const userResponse = UserResponseDto.toDto(user);
         return ApiResponse.ok(
             {
                 user: userResponse,

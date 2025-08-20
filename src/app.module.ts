@@ -10,11 +10,11 @@ import {
     OAUTH_CONFIG,
 } from "./config/app.config";
 import { DatabaseModule } from "./config/database/database.module";
+import { ModuleWithCommonMiddleware } from "./middlewares";
 import { AuthModule } from "./modules/auth.module";
 import { UserModule } from "./modules/user.module";
-import { GlobalExceptionFilter } from "./presentation/filters/global-exception.filter";
-import { ResponseInterceptor } from "./presentation/interceptors/response.interceptor";
-import { ModuleWithCommonMiddleware } from "./presentation/middleware";
+import { GlobalExceptionFilter } from "./shared/common/filters/global-exception.filter";
+import { ResponseInterceptor } from "./shared/common/interceptors/response.interceptor";
 
 @Module({
     imports: [
